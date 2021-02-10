@@ -1,13 +1,16 @@
-#include "abstract.hpp"
+#include "Parser.hpp"
 
 int main(int ac, char *av[])
 {
 	--ac;
 	++av;
 
-	for (int i = 0; i < ac; i++)
+	Parser p;
+
+	if (ac)
 	{
-		std::cout << av[i] << std::endl;
+		p.parseFile(*av);
 	}
+
 	return 0;
 }
