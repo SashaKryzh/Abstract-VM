@@ -2,7 +2,7 @@ NAME := avm
 
 CXX := clang++
 # CXXFLAGS := -Wall -Wextra -Werror -std=c++11
-CXXFLAGS := -std=c++11
+CXXFLAGS := -std=c++11 -g
 CPPFLAGS := -Iinclude -MMD -MP
 
 SRC_DIR := src

@@ -25,4 +25,6 @@ private:
 	IOperand const *createDouble(std::string const &value) const;
 };
 
+static const OperandFactory gOperandFactory;
+
 #endif
