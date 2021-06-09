@@ -5,24 +5,24 @@
 
 #include "IOperand.hpp"
 
-enum TokenTypes
-{
-	INSTR_NO_VALUE,
-	INSTR_WITH_VALUE,
-	VALUE,
-	SEP,
-};
-
 class Token
 {
 public:
-	Token();
-	Token(TokenTypes type, std::string string);
-	Token(TokenTypes type, std::string string, eOperandType oType);
+	enum Type
+	{
+		INSTR_NO_VALUE = 0,
+		INSTR_WITH_VALUE,
+		VALUE,
+		SEP,
+	};
 
-	TokenTypes tokenType;
-	eOperandType operandType;
+	Token();
+	Token(Type type, std::string string);
+	Token(Type type, std::string string, eOperandType oType);
+
+	Type type;
 	std::string string;
+	eOperandType oType;
 
 	std::string const toString(void);
 };

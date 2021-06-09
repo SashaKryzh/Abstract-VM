@@ -1,6 +1,6 @@
 #include "OperandFactory.hpp"
 
-const OperandFactory::fnPtrCreateOperand OperandFactory::fnPtrCreateOperands[MaxOperandType] = {
+const OperandFactory::fnPtrCreateOperand OperandFactory::fnPtrCreateOperands[eOperandType::MaxOperandType] = {
 	&OperandFactory::createInt8,
 	&OperandFactory::createInt16,
 	&OperandFactory::createInt32,
@@ -13,7 +13,7 @@ OperandFactory::~OperandFactory() {}
 
 IOperand const *OperandFactory::createOperand(eOperandType type, std::string const &value) const
 {
-	std::cout << type << " " << value << std::endl;
+	std::cout << static_cast<int>(type) << " " << value << std::endl;
 	return NULL;
 }
 

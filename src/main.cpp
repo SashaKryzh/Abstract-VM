@@ -1,4 +1,4 @@
-#include "Parser.hpp"
+#include "Lexer.hpp"
 #include "OperandFactory.hpp"
 
 int main(int ac, char *av[])
@@ -6,11 +6,18 @@ int main(int ac, char *av[])
 	--ac;
 	++av;
 
-	Parser p;
+	Lexer p;
 
 	if (ac)
 	{
-		p.parseFile(*av);
+		auto tokens = p.parseFile(*av);
+		
+		for (auto &token : tokens)
+		{
+			std::cout << token.toString() << std::endl;
+		}
+
+		
 	}
 
 	return 0;

@@ -16,7 +16,7 @@ public:
 
 private:
 	typedef IOperand const *(OperandFactory::*fnPtrCreateOperand)(std::string const &) const;
-	static const fnPtrCreateOperand fnPtrCreateOperands[MaxOperandType];
+	static const fnPtrCreateOperand fnPtrCreateOperands[eOperandType::MaxOperandType];
 
 	IOperand const *createInt8(std::string const &value) const;
 	IOperand const *createInt16(std::string const &value) const;

@@ -14,6 +14,15 @@ enum eOperandType : int8_t
 	MaxOperandType
 };
 
+static const std::string operandTypeNames[]{
+	"int8",
+	"int16",
+	"int32",
+	"float",
+	"double",
+	"None",
+};
+
 class IOperand
 {
 public:
