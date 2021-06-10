@@ -1,6 +1,6 @@
 
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef LEXER_HPP
+#define LEXER_HPP
 
 #include <string>
 #include <vector>

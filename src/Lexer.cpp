@@ -1,5 +1,6 @@
 #include "Lexer.hpp"
 #include <fstream>
+#include <regex>
 
 Lexer::Lexer() {}
 Lexer::~Lexer() {}
@@ -10,37 +11,26 @@ std::vector<Token> Lexer::parseFile(std::string const &fileName)
 	if (file.is_open())
 	{
 		std::string line;
-
 		size_t count = 0;
-
 		while (std::getline(file, line))
 		{
-			for (auto it = line.begin(); it != line.end(); ++it)
+			auto it = line.begin();
+			while (it != line.end())
 			{
-				if (isspace(*it))
-					continue;
-				else if (*it == ';')
+				if (*it == ';')
 					break;
+				else if (isspace(*it))
+					it++;
 				else
 				{
-					std::string::iterator start = it;
+					auto tokenStart = it;
 					while (it != line.end() && !isspace(*it))
 						it++;
-					std::string tokenString = std::string(start, it);
-
-					try
-					{
-						tokens.push_back(createToken(tokenString));
-					}
-					catch (const std::exception &e)
-					{
-						std::cerr << e.what() << '\n';
-					}
-
-					if (it == line.end())
-						break;
+					std::string tokenString = std::string(tokenStart, it);
+					tokens.push_back(createToken(tokenString));
 				}
 			}
+			tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType));
 		}
 		file.close();
 	}
@@ -55,30 +45,34 @@ std::vector<Token> Lexer::parseFile(std::string const &fileName)
 
 Token Lexer::createToken(std::string tokenString)
 {
-	int parPos;
-	if ((parPos = tokenString.find('(')) != std::string::npos && tokenString.back() == ')')
+	Token::Type type = Token::Type::UNKNOWN;
+	eOperandType oType = eOperandType::MaxOperandType;
+
+	static const std::regex value(R"(((int8|int16|int32)\([-]?[0-9]+\))|((float|double)\([-]?[0-9]+\.[0-9]+\)))");
+	if (std::regex_match(tokenString, value))
 	{
-		std::string typeString = tokenString.substr(0, parPos);
+		std::string typeString = tokenString.substr(0, tokenString.find('('));
 		for (int i = 0; i < eOperandType::MaxOperandType; ++i)
 		{
 			if (operandTypeNames[i] == typeString)
-				return Token(Token::Type::VALUE, tokenString, (eOperandType)i);
+			{
+				type = Token::Type::VALUE;
+				oType = static_cast<eOperandType>(i);
+			}
 		}
 	}
-	else
+
+	for (int i = 0; i < COUNT_NO_VALUE_INSTRS; ++i)
 	{
-		for (int i = 0; i < COUNT_NO_VALUE_INSTRS; ++i)
-		{
-			if (instrNoValue[i] == tokenString)
-				return Token(Token::Type::INSTR_NO_VALUE, tokenString);
-		}
-
-		for (int i = 0; i < COUNT_WITH_VALUE_INSTRS; ++i)
-		{
-			if (instrWithValue[i] == tokenString)
-				return Token(Token::Type::INSTR_WITH_VALUE, tokenString);
-		}
+		if (instrNoValue[i] == tokenString)
+			type = Token::Type::INSTR_NO_VALUE;
 	}
 
-	throw "Unexpected";
+	for (int i = 0; i < COUNT_WITH_VALUE_INSTRS; ++i)
+	{
+		if (instrWithValue[i] == tokenString)
+			type = Token::Type::INSTR_WITH_VALUE;
+	}
+
+	return Token(type, tokenString, oType);
 }

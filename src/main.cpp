@@ -1,4 +1,8 @@
+#include <iostream>
+
+#include "abstract.hpp"
 #include "Lexer.hpp"
+#include "Parser.hpp"
 #include "OperandFactory.hpp"
 
 int main(int ac, char *av[])
@@ -11,13 +15,7 @@ int main(int ac, char *av[])
 	if (ac)
 	{
 		auto tokens = p.parseFile(*av);
-		
-		for (auto &token : tokens)
-		{
-			std::cout << token.toString() << std::endl;
-		}
-
-		
+		utils::printTokens(tokens);
 	}
 
 	return 0;

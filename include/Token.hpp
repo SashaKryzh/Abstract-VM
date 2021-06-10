@@ -14,12 +14,14 @@ public:
 		INSTR_WITH_VALUE,
 		VALUE,
 		SEP,
+		UNKNOWN,
 	};
 
 	Token();
-	Token(Type type, std::string string);
 	Token(Type type, std::string string, eOperandType oType);
+	~Token();
 
+	// TODO: make private
 	Type type;
 	std::string string;
 	eOperandType oType;

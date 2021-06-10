@@ -20,7 +20,6 @@ static const std::string operandTypeNames[]{
 	"int32",
 	"float",
 	"double",
-	"None",
 };
 
 class IOperand

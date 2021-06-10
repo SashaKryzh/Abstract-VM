@@ -3,9 +3,9 @@
 
 #include "Token.hpp"
 
-Token::Token() {}
-Token::Token(Type type, std::string string) : type(type), string(string), oType(eOperandType::MaxOperandType) {}
+Token::Token() : type(Token::Type::UNKNOWN), string(""), oType(eOperandType::MaxOperandType) {}
 Token::Token(Type type, std::string string, eOperandType oType) : type(type), string(string), oType(oType) {}
+Token::~Token() {}
 
 std::string const Token::toString(void)
 {
@@ -14,6 +14,7 @@ std::string const Token::toString(void)
 		"INSTR_WITH_VALUE",
 		"VALUE",
 		"SEP",
+		"UNKNOWN",
 	};
 	std::ostringstream ss;
 	ss << names[static_cast<int>(type)] << " "
