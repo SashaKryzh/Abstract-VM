@@ -18,13 +18,14 @@ public:
 	};
 
 	Token();
-	Token(Type type, std::string string, eOperandType oType);
+	Token(Type type, std::string string, eOperandType oType, size_t lineCount);
 	~Token();
 
 	// TODO: make private
 	Type type;
 	std::string string;
 	eOperandType oType;
+	size_t lineCount;
 
 	std::string const toString(void);
 };

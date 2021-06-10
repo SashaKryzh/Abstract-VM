@@ -31,7 +31,7 @@ public:
 private:
 	std::vector<Token> tokens;
 
-	Token createToken(std::string tokenString);
+	Token createToken(std::string tokenString, size_t lineCount);
 };
 
 #endif

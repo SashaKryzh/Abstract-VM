@@ -3,8 +3,9 @@
 
 #include "Token.hpp"
 
-Token::Token() : type(Token::Type::UNKNOWN), string(""), oType(eOperandType::MaxOperandType) {}
-Token::Token(Type type, std::string string, eOperandType oType) : type(type), string(string), oType(oType) {}
+Token::Token() : type(Token::Type::UNKNOWN), string(""), oType(eOperandType::MaxOperandType), lineCount(0) {}
+Token::Token(Type type, std::string string, eOperandType oType, size_t lineCount)
+	: type(type), string(string), oType(oType), lineCount(lineCount) {}
 Token::~Token() {}
 
 std::string const Token::toString(void)

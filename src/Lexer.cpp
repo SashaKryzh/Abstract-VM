@@ -11,7 +11,7 @@ std::vector<Token> Lexer::parseFile(std::string const &fileName)
 	if (file.is_open())
 	{
 		std::string line;
-		size_t count = 0;
+		size_t lineCount = 1;
 		while (std::getline(file, line))
 		{
 			auto it = line.begin();
@@ -27,10 +27,12 @@ std::vector<Token> Lexer::parseFile(std::string const &fileName)
 					while (it != line.end() && !isspace(*it))
 						it++;
 					std::string tokenString = std::string(tokenStart, it);
-					tokens.push_back(createToken(tokenString));
+					tokens.push_back(createToken(tokenString, lineCount));
 				}
 			}
-			tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType));
+			if (!file.eof())
+				tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
+			lineCount++;
 		}
 		file.close();
 	}
@@ -43,7 +45,7 @@ std::vector<Token> Lexer::parseFile(std::string const &fileName)
 	return tokens;
 }
 
-Token Lexer::createToken(std::string tokenString)
+Token Lexer::createToken(std::string tokenString, size_t lineCount)
 {
 	Token::Type type = Token::Type::UNKNOWN;
 	eOperandType oType = eOperandType::MaxOperandType;
@@ -74,5 +76,5 @@ Token Lexer::createToken(std::string tokenString)
 			type = Token::Type::INSTR_WITH_VALUE;
 	}
 
-	return Token(type, tokenString, oType);
+	return Token(type, tokenString, oType, lineCount);
 }
