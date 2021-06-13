@@ -18,7 +18,7 @@ static const std::string instrNoValue[COUNT_NO_VALUE_INSTRS] = {"pop", "dump", "
 																"mul", "div", "mod", "print", "exit"};
 static const std::string instrWithValue[COUNT_WITH_VALUE_INSTRS] = {"push", "assert"};
 
-static const Token _ttt = Token();
+static const Token _ttt;
 
 class Lexer
 {

@@ -3,10 +3,10 @@
 
 void utils::printTokens(std::vector<Token> tokens)
 {
-	for (auto &token : tokens)
+	for (auto const &token : tokens)
 	{
-		if (token.type == Token::Type::SEP)
+		if (token.getType() == Token::Type::SEP)
 			continue;
-		std::cout << "[" << token.lineCount << "] " << token.toString() << std::endl;
+		std::cout << "[" << token.getLine() << "] " << token.toString() << std::endl;
 	}
 }

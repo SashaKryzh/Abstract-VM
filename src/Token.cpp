@@ -3,12 +3,40 @@
 
 #include "Token.hpp"
 
-Token::Token() : type(Token::Type::UNKNOWN), string(""), oType(eOperandType::MaxOperandType), lineCount(0) {}
+Token::Token() : type(Token::Type::UNKNOWN), lexeme(""), oType(eOperandType::MaxOperandType), line(0) {}
 Token::Token(Type type, std::string string, eOperandType oType, size_t lineCount)
-	: type(type), string(string), oType(oType), lineCount(lineCount) {}
+	: type(type), lexeme(string), oType(oType), line(lineCount) {}
 Token::~Token() {}
 
-std::string const Token::toString(void)
+Token::Token(Token const &rhs)
+{
+	type = rhs.type;
+	lexeme = rhs.lexeme;
+	oType = rhs.oType;
+	line = rhs.line;
+}
+
+Token::Type Token::getType() const
+{
+	return type;
+}
+
+std::string const &Token::getLexeme() const
+{
+	return lexeme;
+}
+
+eOperandType Token::getOType() const
+{
+	return oType;
+}
+
+size_t Token::getLine() const
+{
+	return line;
+}
+
+std::string const Token::toString(void) const
 {
 	static const char *const names[]{
 		"INSTR_NO_VALUE",
@@ -21,6 +49,6 @@ std::string const Token::toString(void)
 	ss << names[static_cast<int>(type)] << "(";
 	if (type == Type::VALUE)
 		ss << "[" << operandTypeNames[static_cast<int>(oType)] << "]";
-	ss << string << ")";
+	ss << lexeme << ")";
 	return ss.str();
 }

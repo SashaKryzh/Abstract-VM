@@ -90,17 +90,17 @@ bool Lexer::checkToken(std::vector<Token>::iterator it, Token::Type expectedType
 {
 	if (it == tokens.end())
 	{
-		displayError(ErrorType::UNEXPECTED_END, (--it)->lineCount);
+		displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
 		return false;
 	}
-	else if (it->type == Token::Type::UNKNOWN)
+	else if (it->getType() == Token::Type::UNKNOWN)
 	{
 		// Displays error in validate() function
 		return false;
 	}
-	else if (it->type != expectedType)
+	else if (it->getType() != expectedType)
 	{
-		displayError(ErrorType::UNEXPECTED_TOKEN, it->lineCount, *it, expectedType);
+		displayError(ErrorType::UNEXPECTED_TOKEN, it->getLine(), *it, expectedType);
 		return false;
 	}
 	return true;
@@ -111,10 +111,10 @@ void Lexer::validate()
 	auto it = tokens.begin();
 	while (it != tokens.end())
 	{
-		switch (it->type)
+		switch (it->getType())
 		{
 		case Token::Type::INSTR_NO_VALUE:
-			if (it->string == "exit")
+			if (it->getLexeme() == "exit")
 				it++;
 			else
 				checkToken(++it, Token::Type::SEP);
@@ -126,7 +126,7 @@ void Lexer::validate()
 			break;
 
 		case Token::Type::VALUE:
-			displayError(ErrorType::NEW_LINE_VALUE, it->lineCount);
+			displayError(ErrorType::NEW_LINE_VALUE, it->getLine());
 			it++;
 			break;
 
@@ -135,8 +135,8 @@ void Lexer::validate()
 			break;
 
 		case Token::Type::UNKNOWN:
-			displayError(ErrorType::UNKNOWN_TOKEN, it->lineCount);
-			while (it != tokens.end() && it->type != Token::Type::SEP)
+			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine());
+			while (it != tokens.end() && it->getType() != Token::Type::SEP)
 				it++;
 			break;
 		}
@@ -149,7 +149,7 @@ void Lexer::displayError(ErrorType errorType, size_t line, Token const &token, T
 	switch (errorType)
 	{
 	case ErrorType::UNKNOWN_TOKEN:
-		std::cout << "Lexical error : Unknown token " << token.string << " at line " << line << std::endl;
+		std::cout << "Lexical error : Unknown token " << token.getLexeme() << " at line " << line << std::endl;
 		break;
 
 	case ErrorType::UNEXPECTED_END:
@@ -157,7 +157,7 @@ void Lexer::displayError(ErrorType errorType, size_t line, Token const &token, T
 		break;
 
 	case ErrorType::UNEXPECTED_TOKEN:
-		std::cout << "Syntatic error : Got " << tokenTypeStrings[token.type]
+		std::cout << "Syntatic error : Got " << tokenTypeStrings[token.getType()]
 				  << " while expected " << tokenTypeStrings[expectedType] << " at line " << line << std::endl;
 		break;
 

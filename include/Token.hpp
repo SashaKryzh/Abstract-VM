@@ -20,18 +20,25 @@ public:
 	Token();
 	Token(Type type, std::string string, eOperandType oType, size_t lineCount);
 	~Token();
+	Token(const Token &);
+	void operator=(const Token &) = delete;
 
-	// TODO: make private
+	Type getType() const;
+	std::string const &getLexeme() const;
+	eOperandType getOType() const;
+	size_t getLine() const;
+
+	std::string const toString(void) const;
+
+private:
 	Type type;
-	std::string string;
+	std::string lexeme;
 	eOperandType oType;
-	size_t lineCount;
-
-	std::string const toString(void);
+	size_t line;
 };
 
 static const std::string tokenTypeStrings[Token::Type::UNKNOWN + 1] = {
-	"INSTR WITHOUT VALUE",
+	"INSTR",
 	"INSTR WITH VALUE",
 	"VALUE",
 	"SEP",
