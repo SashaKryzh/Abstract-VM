@@ -30,4 +30,12 @@ public:
 	std::string const toString(void);
 };
 
+static const std::string tokenTypeStrings[Token::Type::UNKNOWN + 1] = {
+	"INSTR WITHOUT VALUE",
+	"INSTR WITH VALUE",
+	"VALUE",
+	"SEP",
+	"UNKNOWN",
+};
+
 #endif

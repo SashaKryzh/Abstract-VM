@@ -18,8 +18,9 @@ std::string const Token::toString(void)
 		"UNKNOWN",
 	};
 	std::ostringstream ss;
-	ss << names[static_cast<int>(type)] << " "
-	   << operandTypeNames[static_cast<int>(oType)] << " "
-	   << string;
+	ss << names[static_cast<int>(type)] << "(";
+	if (type == Type::VALUE)
+		ss << "[" << operandTypeNames[static_cast<int>(oType)] << "]";
+	ss << string << ")";
 	return ss.str();
 }
