@@ -1,4 +1,3 @@
-
 #ifndef IOPERAND_HPP
 #define IOPERAND_HPP
 

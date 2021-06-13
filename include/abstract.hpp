@@ -9,6 +9,7 @@
 namespace utils
 {
 	void printTokens(std::vector<Token> tokens);
+	std::string trim(const std::string &s);
 }
 
 #endif

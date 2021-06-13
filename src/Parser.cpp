@@ -3,6 +3,8 @@
 #include <fstream>
 #include <regex>
 
+#include "abstract.hpp"
+
 Parser::Parser() : _isValid(true) {}
 Parser::~Parser() {}
 
@@ -15,22 +17,7 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 		size_t lineCount = 1;
 		while (std::getline(file, line))
 		{
-			auto it = line.begin();
-			while (it != line.end())
-			{
-				if (*it == ';')
-					break;
-				else if (isspace(*it))
-					it++;
-				else
-				{
-					auto tokenStart = it;
-					while (it != line.end() && !isspace(*it))
-						it++;
-					std::string tokenString = std::string(tokenStart, it);
-					tokens.push_back(createToken(tokenString, lineCount));
-				}
-			}
+			parseLine(line, lineCount);
 			if (!file.eof())
 				tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
 			lineCount++;
@@ -39,20 +26,63 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 	}
 	else
 	{
-		// TODO: Exception
-		std::cout << "error opening file" << std::endl;
+		_isValid = false;
+		std::cout << "Error while opening file" << std::endl;
 	}
-
-	validate();
+	// Could be invalid if file error
+	if (_isValid)
+		validate();
 	return tokens;
 }
 
 std::vector<Token> Parser::parseStandartInput()
 {
+	std::string line;
+	size_t lineCount = 1;
+	while (true)
+	{
+		std::getline(std::cin, line);
+		if (std::cin.bad() || std::cin.eof() || std::cin.fail())
+		{
+			std::cout << "Error while reading from standart input" << std::endl;
+			_isValid = false;
+			break;
+		}
+		else
+		{
+			if (utils::trim(line) == ";;")
+				break;
+			parseLine(line, lineCount);
+			tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
+			lineCount++;
+		}
+	}
+	// Could be invalid if stdin error
+	if (_isValid)
+		validate();
 	return tokens;
 }
 
-Token Parser::createToken(std::string tokenString, size_t lineCount)
+void Parser::parseLine(std::string const &line, size_t lineCount)
+{
+	auto it = line.begin();
+	while (it != line.end())
+	{
+		if (*it == ';')
+			break;
+		else if (isspace(*it))
+			it++;
+		else
+		{
+			auto tokenStart = it;
+			while (it != line.end() && !isspace(*it))
+				it++;
+			tokens.push_back(createToken(std::string(tokenStart, it), lineCount));
+		}
+	}
+}
+
+Token Parser::createToken(std::string const tokenString, size_t lineCount)
 {
 	Token::Type type = Token::Type::UNKNOWN;
 	eOperandType oType = eOperandType::MaxOperandType;
@@ -84,27 +114,6 @@ Token Parser::createToken(std::string tokenString, size_t lineCount)
 	}
 
 	return Token(type, tokenString, oType, lineCount);
-}
-
-// Checks for tokens.end(), UNKNOWN, != expectedType
-bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
-{
-	if (it == tokens.end())
-	{
-		displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
-		return false;
-	}
-	else if (it->getType() == Token::Type::UNKNOWN)
-	{
-		// Displays error in validate() function
-		return false;
-	}
-	else if (it->getType() != expectedType)
-	{
-		displayError(ErrorType::UNEXPECTED_TOKEN, it->getLine(), *it, expectedType);
-		return false;
-	}
-	return true;
 }
 
 void Parser::validate()
@@ -142,6 +151,27 @@ void Parser::validate()
 			break;
 		}
 	}
+}
+
+// Checks for tokens.end(), != expectedType
+bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
+{
+	if (it == tokens.end())
+	{
+		displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
+		return false;
+	}
+	else if (it->getType() == Token::Type::UNKNOWN)
+	{
+		// Displays error in validate() function
+		return false;
+	}
+	else if (it->getType() != expectedType)
+	{
+		displayError(ErrorType::UNEXPECTED_TOKEN, it->getLine(), *it, expectedType);
+		return false;
+	}
+	return true;
 }
 
 void Parser::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)
