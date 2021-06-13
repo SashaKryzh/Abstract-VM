@@ -1,6 +1,6 @@
 
-#ifndef LEXER_HPP
-#define LEXER_HPP
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
 #include <string>
 #include <vector>
@@ -20,13 +20,13 @@ static const std::string instrWithValue[COUNT_WITH_VALUE_INSTRS] = {"push", "ass
 
 static const Token _ttt;
 
-class Lexer
+class Parser
 {
 public:
-	Lexer();
-	~Lexer();
-	Lexer(const Lexer &) = delete;
-	void operator=(const Lexer &) = delete;
+	Parser();
+	~Parser();
+	Parser(const Parser &) = delete;
+	void operator=(const Parser &) = delete;
 
 	std::vector<Token> parseFile(std::string const &fileName);
 	std::vector<Token> parseStandartInput();

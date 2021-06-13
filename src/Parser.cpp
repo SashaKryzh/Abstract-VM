@@ -1,11 +1,12 @@
-#include "Lexer.hpp"
+#include "Parser.hpp"
+
 #include <fstream>
 #include <regex>
 
-Lexer::Lexer() : _isValid(true) {}
-Lexer::~Lexer() {}
+Parser::Parser() : _isValid(true) {}
+Parser::~Parser() {}
 
-std::vector<Token> Lexer::parseFile(std::string const &fileName)
+std::vector<Token> Parser::parseFile(std::string const &fileName)
 {
 	std::ifstream file(fileName);
 	if (file.is_open())
@@ -46,12 +47,12 @@ std::vector<Token> Lexer::parseFile(std::string const &fileName)
 	return tokens;
 }
 
-std::vector<Token> Lexer::parseStandartInput()
+std::vector<Token> Parser::parseStandartInput()
 {
 	return tokens;
 }
 
-Token Lexer::createToken(std::string tokenString, size_t lineCount)
+Token Parser::createToken(std::string tokenString, size_t lineCount)
 {
 	Token::Type type = Token::Type::UNKNOWN;
 	eOperandType oType = eOperandType::MaxOperandType;
@@ -86,7 +87,7 @@ Token Lexer::createToken(std::string tokenString, size_t lineCount)
 }
 
 // Checks for tokens.end(), UNKNOWN, != expectedType
-bool Lexer::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
+bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
 {
 	if (it == tokens.end())
 	{
@@ -106,7 +107,7 @@ bool Lexer::checkToken(std::vector<Token>::iterator it, Token::Type expectedType
 	return true;
 }
 
-void Lexer::validate()
+void Parser::validate()
 {
 	auto it = tokens.begin();
 	while (it != tokens.end())
@@ -143,7 +144,7 @@ void Lexer::validate()
 	}
 }
 
-void Lexer::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)
+void Parser::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)
 {
 	_isValid = false;
 	switch (errorType)

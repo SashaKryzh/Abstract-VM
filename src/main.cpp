@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "abstract.hpp"
-#include "Lexer.hpp"
+#include "Parser.hpp"
 #include "OperandFactory.hpp"
 
 int main(int ac, char *av[])
@@ -9,7 +9,7 @@ int main(int ac, char *av[])
 	--ac;
 	++av;
 
-	Lexer p;
+	Parser p;
 
 	if (ac)
 	{
