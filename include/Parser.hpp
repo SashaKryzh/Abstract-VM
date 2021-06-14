@@ -15,7 +15,8 @@ static const std::string instrNoValue[COUNT_NO_VALUE_INSTRS] = {"pop", "dump", "
 																"mul", "div", "mod", "print", "exit"};
 static const std::string instrWithValue[COUNT_WITH_VALUE_INSTRS] = {"push", "assert"};
 
-static const Token _ttt;
+// To use as default value in displayError function
+static const Token _defaultToken;
 
 class Parser
 {
@@ -38,13 +39,14 @@ private:
 	};
 
 	bool _isValid;
-	std::vector<Token> tokens;
+	std::vector<Token> _tokens;
 
 	void parseLine(std::string const &, size_t lineCount);
 	Token createToken(std::string tokenString, size_t lineCount);
 	void validate();
+	void goToNextLine(std::vector<Token>::iterator &it);
 	bool checkToken(std::vector<Token>::iterator it, Token::Type expectedType);
-	void displayError(ErrorType errorType, size_t line, Token const &token = _ttt, Token::Type expectedType = Token::Type::UNKNOWN);
+	void displayError(ErrorType errorType, size_t line, Token const &token = _defaultToken, Token::Type expectedType = Token::Type::UNKNOWN);
 };
 
 #endif

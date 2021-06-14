@@ -19,7 +19,7 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 		{
 			parseLine(line, lineCount);
 			if (!file.eof())
-				tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
+				_tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
 			lineCount++;
 		}
 		file.close();
@@ -27,12 +27,16 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 	else
 	{
 		_isValid = false;
-		std::cout << "Error while opening file" << std::endl;
+		std::cout << "Error while opening a file" << std::endl;
 	}
 	// Could be invalid if file error
 	if (_isValid)
 		validate();
-	return tokens;
+
+	if (_isValid)
+		return _tokens;
+	else
+		return {};
 }
 
 std::vector<Token> Parser::parseStandartInput()
@@ -44,7 +48,7 @@ std::vector<Token> Parser::parseStandartInput()
 		std::getline(std::cin, line);
 		if (std::cin.bad() || std::cin.eof() || std::cin.fail())
 		{
-			std::cout << "Error while reading from standart input" << std::endl;
+			std::cout << "Error while reading from the standart input" << std::endl;
 			_isValid = false;
 			break;
 		}
@@ -53,14 +57,18 @@ std::vector<Token> Parser::parseStandartInput()
 			if (utils::trim(line) == ";;")
 				break;
 			parseLine(line, lineCount);
-			tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
+			_tokens.push_back(Token(Token::Type::SEP, "", eOperandType::MaxOperandType, lineCount));
 			lineCount++;
 		}
 	}
 	// Could be invalid if stdin error
 	if (_isValid)
 		validate();
-	return tokens;
+
+	if (_isValid)
+		return _tokens;
+	else
+		return {};
 }
 
 void Parser::parseLine(std::string const &line, size_t lineCount)
@@ -77,7 +85,7 @@ void Parser::parseLine(std::string const &line, size_t lineCount)
 			auto tokenStart = it;
 			while (it != line.end() && !isspace(*it))
 				it++;
-			tokens.push_back(createToken(std::string(tokenStart, it), lineCount));
+			_tokens.push_back(createToken(std::string(tokenStart, it), lineCount));
 		}
 	}
 }
@@ -118,26 +126,24 @@ Token Parser::createToken(std::string const tokenString, size_t lineCount)
 
 void Parser::validate()
 {
-	auto it = tokens.begin();
-	while (it != tokens.end())
+	auto it = _tokens.begin();
+	while (it != _tokens.end())
 	{
 		switch (it->getType())
 		{
 		case Token::Type::INSTR_NO_VALUE:
-			if (it->getLexeme() == "exit")
-				it++;
-			else
-				checkToken(++it, Token::Type::SEP);
+			checkToken(++it, Token::Type::SEP);
 			break;
 
 		case Token::Type::INSTR_WITH_VALUE:
-			if (checkToken(++it, Token::Type::VALUE))
-				checkToken(++it, Token::Type::SEP);
+			if ((!checkToken(++it, Token::Type::VALUE) || !checkToken(++it, Token::Type::SEP)) &&
+				it->getType() != Token::Type::SEP && it != _tokens.end())
+				goToNextLine(++it);
 			break;
 
 		case Token::Type::VALUE:
 			displayError(ErrorType::NEW_LINE_VALUE, it->getLine());
-			it++;
+			goToNextLine(++it);
 			break;
 
 		case Token::Type::SEP:
@@ -145,25 +151,40 @@ void Parser::validate()
 			break;
 
 		case Token::Type::UNKNOWN:
-			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine());
-			while (it != tokens.end() && it->getType() != Token::Type::SEP)
-				it++;
+			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
+			goToNextLine(++it);
 			break;
 		}
+	}
+}
+
+void Parser::goToNextLine(std::vector<Token>::iterator &it)
+{
+	while (it != _tokens.end() && it->getType() != Token::Type::SEP)
+	{
+		if (it->getType() == Token::Type::UNKNOWN)
+			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
+		it++;
 	}
 }
 
 // Checks for tokens.end(), != expectedType
 bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
 {
-	if (it == tokens.end())
+	if (it == _tokens.end())
 	{
-		displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
-		return false;
+		// It is possible to have end if the SEP required
+		if (expectedType != Token::Type::SEP)
+		{
+			displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
+			return false;
+		}
+		else
+			return true;
 	}
 	else if (it->getType() == Token::Type::UNKNOWN)
 	{
-		// Displays error in validate() function
+		displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
 		return false;
 	}
 	else if (it->getType() != expectedType)
@@ -177,24 +198,24 @@ bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedTyp
 void Parser::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)
 {
 	_isValid = false;
+	std::cout << "Line " << std::setw(3) << std::left << line << " : ";
 	switch (errorType)
 	{
 	case ErrorType::UNKNOWN_TOKEN:
-		std::cout << "Lexical error : Unknown token " << token.getLexeme() << " at line " << line << std::endl;
+		std::cout << "Lexical error  : Unknown token : " << token.getLexeme() << std::endl;
 		break;
 
 	case ErrorType::UNEXPECTED_END:
-		std::cout << "Syntatic error : Unexpected end of tokens at line " << line << std::endl;
+		std::cout << "Syntatic error : Unexpected end of tokens" << std::endl;
 		break;
 
 	case ErrorType::UNEXPECTED_TOKEN:
 		std::cout << "Syntatic error : Got " << tokenTypeStrings[token.getType()]
-				  << " while expected " << tokenTypeStrings[expectedType] << " at line " << line << std::endl;
+				  << " while expected " << tokenTypeStrings[expectedType] << std::endl;
 		break;
 
 	case ErrorType::NEW_LINE_VALUE:
-		std::cout << "Syntatic error : Got VALUE while expected INSTR "
-				  << " at line " << line << std::endl;
+		std::cout << "Syntatic error : Got VALUE while expected INSTR or INSTR WITH VALUE " << std::endl;
 		break;
 	}
 }
