@@ -31,6 +31,18 @@ eOperandType Token::getOType() const
 	return oType;
 }
 
+std::string Token::getOString() const
+{
+	if (type == Type::VALUE)
+	{
+		auto str = lexeme.substr(lexeme.find('(') + 1);
+		str.pop_back();
+		return str;
+	}
+	else
+		return "";
+}
+
 size_t Token::getLine() const
 {
 	return line;

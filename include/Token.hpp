@@ -26,6 +26,7 @@ public:
 	Type getType() const;
 	std::string const &getLexeme() const;
 	eOperandType getOType() const;
+	std::string getOString() const;
 	size_t getLine() const;
 
 	std::string const toString(void) const;
