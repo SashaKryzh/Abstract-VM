@@ -1,0 +1,8 @@
+push float(3.5)
+pop
+push int8(42)
+print
+push double(452352324.34)
+dump
+assert double(452352324.34)
+print
