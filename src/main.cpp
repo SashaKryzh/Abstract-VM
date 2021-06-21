@@ -15,7 +15,8 @@ int main(int ac, char *av[])
 
 	auto tokens = ac ? p.parseFile(*av) : p.parseStandartInput();
 	// utils::printTokens(tokens);
-	avm.executeTokens(tokens);
+	if (!tokens.empty())
+		avm.executeTokens(tokens);
 
 	return 0;
 }

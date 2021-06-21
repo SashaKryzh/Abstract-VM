@@ -22,6 +22,7 @@ AVM::AVM() : _exit(false)
 
 AVM::~AVM()
 {
+	// TODO: free _ops
 }
 
 void AVM::executeTokens(std::vector<Token> tokens)
@@ -55,10 +56,13 @@ void AVM::executeTokens(std::vector<Token> tokens)
 	}
 }
 
+//
+// Instructions
+//
+
 void AVM::push()
 {
 	const Token &valueToken = *(++_it);
-	auto ss = valueToken.getOString();
 	_ops.push_back(gOperandFactory.createOperand(valueToken.getOType(), valueToken.getOString()));
 }
 
@@ -74,7 +78,7 @@ void AVM::dump()
 {
 	for (auto it = _ops.rbegin(); it != _ops.rend(); ++it)
 	{
-		std::cout << (*it)->toString() << std::endl;
+		std::cout << operandTypeNames[(*it)->getType()] << '(' << (*it)->toString() << ')' << std::endl;
 	}
 }
 
@@ -92,14 +96,42 @@ void AVM::assertt()
 		throw "Stack is empty";
 }
 
-void AVM::add()
-{
-}
+void AVM::add() { expression('+'); }
+void AVM::sub() { expression('-'); }
+void AVM::mul() { expression('*'); }
+void AVM::div() { expression('/'); }
+void AVM::mod() { expression('%'); }
 
-void AVM::sub() {}
-void AVM::mul() {}
-void AVM::div() {}
-void AVM::mod() {}
+void AVM::expression(const char op)
+{
+	assertMoreThanOne();
+	IOperand const *op1 = _ops.back();
+	_ops.pop_back();
+	IOperand const *op2 = _ops.back();
+	_ops.pop_back();
+
+	switch (op)
+	{
+	case '+':
+		_ops.push_back(*op2 + *op1);
+		break;
+	case '-':
+		_ops.push_back(*op2 - *op1);
+		break;
+	case '*':
+		_ops.push_back(*op2 * *op1);
+		break;
+	case '/':
+		_ops.push_back(*op2 / *op1);
+		break;
+	case '%':
+		_ops.push_back(*op2 % *op1);
+		break;
+	}
+
+	delete op1;
+	delete op2;
+}
 
 void AVM::print()
 {
@@ -120,4 +152,14 @@ void AVM::print()
 void AVM::exit()
 {
 	_exit = true;
+}
+
+//
+// Utils
+//
+
+void AVM::assertMoreThanOne()
+{
+	if (_ops.size() > 1 == false)
+		throw "Less that two values on stack";
 }

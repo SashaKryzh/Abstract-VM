@@ -37,6 +37,11 @@ private:
 
 	std::map<std::string, void (AVM::*)()> _instrs;
 
+	void expression(const char op);
+
+	// Utils
+	void assertMoreThanOne();
+
 	bool _exit;
 };
 

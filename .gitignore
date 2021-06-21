@@ -1,8 +1,7 @@
-avm
-subject.pdf
-obj
-
 .vscode
 
-a.out
-test.cpp
+avm
+obj/
+subject.pdf
+
+tests/
