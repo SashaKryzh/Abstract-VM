@@ -35,16 +35,22 @@ private:
 	IOperand const *operators(char const op, IOperand const &rhs) const;
 };
 
-// TODO: Is this the best way to check for overflow?
-template <typename T>
-Operand<T>::Operand(eOperandType type, std::string valueString) : _type(type)
-{
-	std::istringstream iss(valueString);
-	iss >> _value;
+static bool willNewValueOverflowType(long double const newValue, eOperandType const newType);
 
-	std::ostringstream ss;
-	ss << _value;
-	_valueString = ss.str();
+template <typename T>
+Operand<T>::Operand(eOperandType type, std::string valueString) : _type(type), _valueString(valueString)
+{
+	try
+	{
+		long double ld = std::stold(valueString);
+		if (willNewValueOverflowType(ld, type))
+			throw std::out_of_range("");
+		_value = static_cast<T>(ld);
+	}
+	catch (std::out_of_range &)
+	{
+		throw "Overflow";
+	}
 }
 
 template <typename T>
@@ -56,32 +62,10 @@ eOperandType Operand<T>::getType() const
 	return _type;
 }
 
-// TODO: Is the implementation correct?
 template <typename T>
 int Operand<T>::getPrecision() const
 {
 	return static_cast<int>(_type);
-}
-
-// TODO: Is the implementation correct?
-static bool willNewValueOverflowType(long double const newValue, eOperandType const newType)
-{
-	int64_t int64 = static_cast<int64_t>(newValue);
-	switch (newType)
-	{
-	case eOperandType::Int8:
-		return int64 < INT8_MIN || int64 > INT8_MAX;
-	case eOperandType::Int16:
-		return int64 < INT16_MIN || int64 > INT16_MAX;
-	case eOperandType::Int32:
-		return int64 < INT32_MIN || int64 > INT32_MAX;
-	case eOperandType::Float:
-		return newValue < -__FLT_MAX__ || newValue > __FLT_MAX__;
-	case eOperandType::Double:
-		return newValue < -__DBL_MAX__ || newValue > __DBL_MAX__;
-	default:
-		return true;
-	}
 }
 
 template <typename T>
@@ -89,7 +73,6 @@ IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 {
 	eOperandType newType = std::max(_type, rhs.getType());
 
-	// TODO: Is the implementation correct?
 	long double value = std::stold(this->toString());
 	long double rhsValue = std::stold(rhs.toString());
 	long double newValue = 0;
@@ -115,23 +98,38 @@ IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 		break;
 
 	case '%':
-		if (_type >= eOperandType::Float || _type >= eOperandType::Float)
+		if (_type >= eOperandType::Float || rhs.getType() >= eOperandType::Float)
 			throw "Floating-point operand";
 		if (rhsValue == 0)
 			throw "Modulo by zero";
 		newValue = static_cast<int32_t>(value) % static_cast<int32_t>(rhsValue);
 		break;
-
-	default:
-		return NULL;
 	}
 
 	if (willNewValueOverflowType(newValue, newType))
 		throw "Overflow";
 
-	std::ostringstream ss;
-	ss << (newType >= eOperandType::Float ? newValue : static_cast<int32_t>(newValue));
-	return gOperandFactory.createOperand(newType, ss.str());
+	auto str = newType >= eOperandType::Float ? std::to_string(newValue) : std::to_string(static_cast<int32_t>(newValue));
+	return gOperandFactory.createOperand(newType, str);
+}
+
+static bool willNewValueOverflowType(long double const newValue, eOperandType const newType)
+{
+	switch (newType)
+	{
+	case eOperandType::Int8:
+		return newValue < INT8_MIN || newValue > INT8_MAX;
+	case eOperandType::Int16:
+		return newValue < INT16_MIN || newValue > INT16_MAX;
+	case eOperandType::Int32:
+		return newValue < INT32_MIN || newValue > INT32_MAX;
+	case eOperandType::Float:
+		return newValue < -__FLT_MAX__ || newValue > __FLT_MAX__;
+	case eOperandType::Double:
+		return newValue < -__DBL_MAX__ || newValue > __DBL_MAX__;
+	default:
+		return true;
+	}
 }
 
 template <typename T>

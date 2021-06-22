@@ -19,8 +19,7 @@ IOperand const *OperandFactory::createOperand(eOperandType type, std::string con
 
 IOperand const *OperandFactory::createInt8(std::string const &value) const
 {
-	// Changed to int16_t because int8_t was hard to convert to and from string
-	return new Operand<int16_t>(eOperandType::Int8, value);
+	return new Operand<int8_t>(eOperandType::Int8, value);
 }
 
 IOperand const *OperandFactory::createInt16(std::string const &value) const
