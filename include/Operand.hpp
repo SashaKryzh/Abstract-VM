@@ -5,6 +5,7 @@
 
 #include "IOperand.hpp"
 #include "OperandFactory.hpp"
+#include "AvmException.hpp"
 
 template <typename T>
 class Operand : public IOperand
@@ -15,6 +16,8 @@ public:
 
 	Operand(Operand const &) = delete;
 	Operand &operator=(Operand const &) = delete;
+	Operand(Operand &&) = delete;
+	Operand &operator=(Operand &&) = delete;
 
 	int getPrecision(void) const;
 	eOperandType getType(void) const;
@@ -49,7 +52,7 @@ Operand<T>::Operand(eOperandType type, std::string valueString) : _type(type), _
 	}
 	catch (std::out_of_range &)
 	{
-		throw "Overflow";
+		throw OperandException("Overflow");
 	}
 }
 
@@ -93,21 +96,21 @@ IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 
 	case '/':
 		if (rhsValue == 0)
-			throw "Division by zero";
+			throw OperandException("Division by zero");
 		newValue = value / rhsValue;
 		break;
 
 	case '%':
 		if (_type >= eOperandType::Float || rhs.getType() >= eOperandType::Float)
-			throw "Floating-point operand";
+			throw OperandException("Floating-point operand during modulo");
 		if (rhsValue == 0)
-			throw "Modulo by zero";
+			throw OperandException("Modulo by zero");
 		newValue = static_cast<int32_t>(value) % static_cast<int32_t>(rhsValue);
 		break;
 	}
 
 	if (willNewValueOverflowType(newValue, newType))
-		throw "Overflow";
+		throw OperandException("Overflow");
 
 	auto str = newType >= eOperandType::Float ? std::to_string(newValue) : std::to_string(static_cast<int32_t>(newValue));
 	return gOperandFactory.createOperand(newType, str);

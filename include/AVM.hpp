@@ -13,14 +13,19 @@ class AVM
 public:
 	AVM();
 	~AVM();
+
 	AVM(AVM const &) = delete;
 	void operator=(AVM const &) = delete;
+	AVM(AVM &&) = delete;
+	AVM &operator=(AVM &&) = delete;
 
-	void executeTokens(std::vector<Token> tokens);
+	void executeFull(std::vector<Token> &tokens);
 
 private:
 	std::vector<const IOperand *> _ops;
 	std::vector<Token>::iterator _it;
+
+	void execute(std::vector<Token> &tokens);
 
 	// Instructions
 	void push();

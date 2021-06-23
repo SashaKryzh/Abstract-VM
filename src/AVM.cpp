@@ -1,7 +1,10 @@
 
 #include "AVM.hpp"
 
+#include <fstream>
+
 #include "OperandFactory.hpp"
+#include "AvmException.hpp"
 
 AVM::AVM() : _exit(false)
 {
@@ -22,37 +25,40 @@ AVM::AVM() : _exit(false)
 
 AVM::~AVM()
 {
-	// TODO: free _ops
+	for (auto op : _ops)
+		delete op;
+	_ops.clear();
 }
 
-void AVM::executeTokens(std::vector<Token> tokens)
+void AVM::executeFull(std::vector<Token> &tokens)
+{
+	try
+	{
+		execute(tokens);
+		if (_exit)
+		{
+			// TODO: Bosun: show unexecuted tokens
+		}
+		else
+		{
+			std::cout << "No exit instruction at the end" << std::endl;
+		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cout << "Line " << std::setw(3) << std::left << _it->getLine()
+				  << " : Runtime error : " << e.what() << '\n';
+	}
+}
+
+void AVM::execute(std::vector<Token> &tokens)
 {
 	_it = tokens.begin();
 	while (_it != tokens.end() && !_exit)
 	{
 		if (_it->getType() != Token::Type::SEP)
-		{
-			try
-			{
-				(this->*_instrs.at(_it->getLexeme()))();
-			}
-			catch (const char *e)
-			{
-				std::cout << e << '\n';
-				return;
-			}
-		}
-
+			(this->*_instrs.at(_it->getLexeme()))();
 		_it++;
-	}
-
-	if (_exit)
-	{
-		// TODO: Bosun: show unexecuted tokens
-	}
-	else
-	{
-		std::cout << "No exit instruction at the end" << std::endl;
 	}
 }
 
@@ -71,15 +77,20 @@ void AVM::pop()
 	if (!_ops.empty())
 		_ops.pop_back();
 	else
-		throw "Pop on empty stack";
+		throw InstructionException("Pop on empty stack");
 }
 
 void AVM::dump()
 {
-	for (auto it = _ops.rbegin(); it != _ops.rend(); ++it)
+	if (!_ops.empty())
 	{
-		std::cout << operandTypeNames[(*it)->getType()] << '(' << (*it)->toString() << ')' << std::endl;
+		for (auto it = _ops.rbegin(); it != _ops.rend(); ++it)
+		{
+			std::cout << operandTypeNames[(*it)->getType()] << '(' << (*it)->toString() << ')' << std::endl;
+		}
 	}
+	else
+		std::cout << "Empty" << std::endl;
 }
 
 void AVM::assertt()
@@ -88,12 +99,12 @@ void AVM::assertt()
 	if (!_ops.empty())
 	{
 		if (_ops.back()->getType() != valueToken.getOType())
-			throw "Wrong type";
+			throw InstructionException("Wrong type in assert");
 		if (_ops.back()->toString() != valueToken.getOString())
-			throw "Wrong value";
+			throw InstructionException("Wrong value in assert");
 	}
 	else
-		throw "Stack is empty";
+		throw InstructionException("Assert on empty stack");
 }
 
 void AVM::add() { expression('+'); }
@@ -138,15 +149,12 @@ void AVM::print()
 	if (!_ops.empty())
 	{
 		if (_ops.back()->getType() == eOperandType::Int8)
-		{
-			int8_t value = std::stoi(_ops.back()->toString());
-			std::cout << static_cast<char>(value) << std::endl;
-		}
+			std::cout << static_cast<int8_t>(std::stoi(_ops.back()->toString())) << std::endl;
 		else
-			throw "Value is not an 8-bit integer";
+			throw InstructionException("Value is not an 8-bit integer");
 	}
 	else
-		throw "Stack is empty";
+		throw InstructionException("Print on empty stack");
 }
 
 void AVM::exit()
@@ -161,5 +169,5 @@ void AVM::exit()
 void AVM::assertMoreThanOne()
 {
 	if (_ops.size() > 1 == false)
-		throw "Less that two values on stack";
+		throw InstructionException("Less than two values on stack");
 }
