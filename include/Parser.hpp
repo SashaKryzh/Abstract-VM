@@ -23,8 +23,11 @@ class Parser
 public:
 	Parser();
 	~Parser();
+	
 	Parser(const Parser &) = delete;
-	void operator=(const Parser &) = delete;
+	Parser operator=(const Parser &) = delete;
+	Parser(Parser &&) = delete;
+	Parser &operator=(Parser &&) = delete;
 
 	std::vector<Token> parseFile(std::string const &fileName);
 	std::vector<Token> parseStandartInput();

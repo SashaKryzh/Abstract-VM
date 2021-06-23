@@ -11,6 +11,8 @@ public:
 
 	OperandFactory(OperandFactory const &) = delete;
 	OperandFactory &operator=(OperandFactory const &) = delete;
+	OperandFactory(OperandFactory &&) = delete;
+	OperandFactory &operator=(OperandFactory &&) = delete;
 
 	IOperand const *createOperand(eOperandType type, std::string const &value) const;
 

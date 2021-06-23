@@ -20,8 +20,12 @@ public:
 	Token();
 	Token(Type type, std::string string, eOperandType oType, size_t lineCount);
 	~Token();
+	
 	Token(const Token &);
-	void operator=(const Token &) = delete;
+	Token(Token &&);
+
+	Token operator=(const Token &) = delete;
+	Token &operator=(Token &&) = delete;
 
 	Type getType() const;
 	std::string const &getLexeme() const;

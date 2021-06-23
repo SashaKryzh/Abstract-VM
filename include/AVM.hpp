@@ -15,7 +15,7 @@ public:
 	~AVM();
 
 	AVM(AVM const &) = delete;
-	void operator=(AVM const &) = delete;
+	AVM operator=(AVM const &) = delete;
 	AVM(AVM &&) = delete;
 	AVM &operator=(AVM &&) = delete;
 

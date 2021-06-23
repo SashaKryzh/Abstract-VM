@@ -16,6 +16,14 @@ Token::Token(Token const &rhs)
 	line = rhs.line;
 }
 
+Token::Token(Token &&rhs)
+{
+	type = rhs.type;
+	lexeme = rhs.lexeme;
+	oType = rhs.oType;
+	line = rhs.line;
+}
+
 Token::Type Token::getType() const
 {
 	return type;
