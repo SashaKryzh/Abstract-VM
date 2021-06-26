@@ -1,0 +1,16 @@
+; Unexecuted tokens
+
+push int8(34) ; push 32
+push int32(43252524) ; push another value
+
+mul ; multiply
+
+dump
+
+exit
+
+; unexecuted tokens:
+push float(4.3)
+assert float(5.55555)
+dump
+div

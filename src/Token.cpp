@@ -1,7 +1,7 @@
+#include "Token.hpp"
 
 #include <sstream>
-
-#include "Token.hpp"
+#include <fstream>
 
 Token::Token() : type(Token::Type::UNKNOWN), lexeme(""), oType(eOperandType::MaxOperandType), line(0) {}
 Token::Token(Type type, std::string string, eOperandType oType, size_t lineCount)
@@ -66,9 +66,10 @@ std::string const Token::toString(void) const
 		"UNKNOWN",
 	};
 	std::ostringstream ss;
-	ss << names[static_cast<int>(type)] << "(";
+	ss << std::setw(16) << std::left << names[type] << " : ";
 	if (type == Type::VALUE)
-		ss << "[" << operandTypeNames[static_cast<int>(oType)] << "]";
-	ss << lexeme << ")";
+		ss << operandTypeNames[oType] << "(" << getOString() << ")";
+	else
+		ss << lexeme;
 	return ss.str();
 }

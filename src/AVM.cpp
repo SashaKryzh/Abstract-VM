@@ -37,7 +37,18 @@ void AVM::executeFull(std::vector<Token> &tokens)
 		execute(tokens);
 		if (_exit)
 		{
-			// TODO: Bosun: show unexecuted tokens
+			while (_it != tokens.end() && _it->getType() == Token::Type::SEP)
+				_it++;
+			if (_it != tokens.end())
+			{
+				std::cout << "\nUnexecuted tokens:" << std::endl;
+				while (_it != tokens.end())
+				{
+					if (_it->getType() != Token::Type::SEP)
+						std::cout << _it->toString() << std::endl;
+					_it++;
+				}
+			}
 		}
 		else
 		{
