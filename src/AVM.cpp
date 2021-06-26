@@ -47,7 +47,7 @@ void AVM::executeFull(std::vector<Token> &tokens)
 	catch (const std::exception &e)
 	{
 		std::cout << "Line " << std::setw(3) << std::left << _it->getLine()
-				  << " : Runtime error : " << e.what() << '\n';
+				  << " : Runtime error : " << e.what() << std::endl;
 	}
 }
 
@@ -60,6 +60,11 @@ void AVM::execute(std::vector<Token> &tokens)
 			(this->*_instrs.at(_it->getLexeme()))();
 		_it++;
 	}
+}
+
+bool AVM::isExit()
+{
+	return _exit;
 }
 
 //

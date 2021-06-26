@@ -2,6 +2,7 @@
 
 avm
 obj/
+debug.avm
 subject.pdf
 
 tests/

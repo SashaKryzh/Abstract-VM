@@ -5,7 +5,7 @@
 
 #include "abstract.hpp"
 
-Parser::Parser() : _isValid(true) {}
+Parser::Parser() : _isValid(true), _isOk(true) {}
 Parser::~Parser() {}
 
 std::vector<Token> Parser::parseFile(std::string const &fileName)
@@ -29,10 +29,8 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 		_isValid = false;
 		std::cout << "Error while opening a file" << std::endl;
 	}
-	// Could be invalid if file error
-	if (_isValid)
-		validate();
 
+	validate();
 	if (_isValid)
 		return _tokens;
 	else
@@ -61,14 +59,39 @@ std::vector<Token> Parser::parseStandartInput()
 			lineCount++;
 		}
 	}
-	// Could be invalid if stdin error
-	if (_isValid)
-		validate();
 
+	validate();
 	if (_isValid)
 		return _tokens;
 	else
 		return {};
+}
+
+std::vector<Token> Parser::parseStandartInputLine()
+{
+	_isValid = true;
+	_tokens.clear();
+
+	std::string line;
+	std::getline(std::cin, line);
+	if (std::cin.bad() || std::cin.eof() || std::cin.fail())
+	{
+		std::cout << "Error while reading from the standart input" << std::endl;
+		_isOk = false;
+		return {};
+	}
+
+	parseLine(line, 0);
+	validate();
+	if (_isValid)
+		return _tokens;
+	else
+		return {};
+}
+
+bool Parser::isOk() const
+{
+	return _isOk;
 }
 
 void Parser::parseLine(std::string const &line, size_t lineCount)
@@ -124,8 +147,12 @@ Token Parser::createToken(std::string const tokenString, size_t lineCount)
 	return Token(type, tokenString, oType, lineCount);
 }
 
+// TODO: rewrite (errors in screenshots)
 void Parser::validate()
 {
+	if (!_isValid)
+		return;
+
 	auto it = _tokens.begin();
 	while (it != _tokens.end())
 	{
@@ -140,7 +167,6 @@ void Parser::validate()
 				it->getType() != Token::Type::SEP && it != _tokens.end())
 				goToNextLine(++it);
 			break;
-
 		case Token::Type::VALUE:
 			displayError(ErrorType::NEW_LINE_VALUE, it->getLine());
 			goToNextLine(++it);
@@ -198,7 +224,8 @@ bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedTyp
 void Parser::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)
 {
 	_isValid = false;
-	std::cout << "Line " << std::setw(3) << std::left << line << " : ";
+	if (line != 0)
+		std::cout << "Line " << std::setw(3) << std::left << line << " : ";
 	switch (errorType)
 	{
 	case ErrorType::UNKNOWN_TOKEN:

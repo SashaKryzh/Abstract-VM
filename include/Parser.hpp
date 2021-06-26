@@ -23,7 +23,7 @@ class Parser
 public:
 	Parser();
 	~Parser();
-	
+
 	Parser(const Parser &) = delete;
 	Parser operator=(const Parser &) = delete;
 	Parser(Parser &&) = delete;
@@ -31,6 +31,9 @@ public:
 
 	std::vector<Token> parseFile(std::string const &fileName);
 	std::vector<Token> parseStandartInput();
+	std::vector<Token> parseStandartInputLine();
+
+	bool isOk() const;
 
 private:
 	enum ErrorType
@@ -44,6 +47,8 @@ private:
 	bool _isValid;
 	std::vector<Token> _tokens;
 
+	bool _isOk;
+
 	void parseLine(std::string const &, size_t lineCount);
 	Token createToken(std::string tokenString, size_t lineCount);
 	void validate();
@@ -51,5 +56,7 @@ private:
 	bool checkToken(std::vector<Token>::iterator it, Token::Type expectedType);
 	void displayError(ErrorType errorType, size_t line, Token const &token = _defaultToken, Token::Type expectedType = Token::Type::UNKNOWN);
 };
+
+static Parser gParser;
 
 #endif

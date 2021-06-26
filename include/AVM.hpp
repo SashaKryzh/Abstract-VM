@@ -20,12 +20,13 @@ public:
 	AVM &operator=(AVM &&) = delete;
 
 	void executeFull(std::vector<Token> &tokens);
+	void execute(std::vector<Token> &tokens);
+
+	bool isExit();
 
 private:
 	std::vector<const IOperand *> _ops;
 	std::vector<Token>::iterator _it;
-
-	void execute(std::vector<Token> &tokens);
 
 	// Instructions
 	void push();
@@ -49,5 +50,7 @@ private:
 
 	bool _exit;
 };
+
+static AVM gAvm;
 
 #endif
