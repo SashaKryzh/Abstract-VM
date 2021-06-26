@@ -1,0 +1,5 @@
+push float(4.5)
+push int32(34)
+pop
+pop
+pop

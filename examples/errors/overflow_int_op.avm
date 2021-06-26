@@ -1,0 +1,6 @@
+push int8(-49)
+push int32(2147483600)
+
+sub ; Oveflow
+
+exit

@@ -1,8 +1,17 @@
-push float(3.5)
-pop
-push int8(42)
-print
-push double(452352324.34)
+push int16(-265)
+push int8(2)
 dump
-assert double(452352324.34)
-print
+
+mul
+
+dump
+
+push float(.)
+push int8()
+dump
+
+mod dump
+
+dump
+
+exit
