@@ -36,9 +36,8 @@ private:
 	std::string _valueString;
 
 	IOperand const *operators(char const op, IOperand const &rhs) const;
+	bool willNewValueOverflowType(long double const newValue, eOperandType const newType) const;
 };
-
-static bool willNewValueOverflowType(long double const newValue, eOperandType const newType);
 
 template <typename T>
 Operand<T>::Operand(eOperandType type, std::string valueString) : _type(type), _valueString(valueString)
@@ -116,7 +115,8 @@ IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 	return gOperandFactory.createOperand(newType, str);
 }
 
-static bool willNewValueOverflowType(long double const newValue, eOperandType const newType)
+template <typename T>
+bool Operand<T>::willNewValueOverflowType(long double const newValue, eOperandType const newType) const
 {
 	switch (newType)
 	{

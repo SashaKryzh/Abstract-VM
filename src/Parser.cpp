@@ -160,13 +160,17 @@ void Parser::validate()
 		{
 		case Token::Type::INSTR_NO_VALUE:
 			checkToken(++it, Token::Type::SEP);
+			if (it != _tokens.end())
+				goToNextLine(++it);
 			break;
 
 		case Token::Type::INSTR_WITH_VALUE:
-			if ((!checkToken(++it, Token::Type::VALUE) || !checkToken(++it, Token::Type::SEP)) &&
-				it->getType() != Token::Type::SEP && it != _tokens.end())
+			if (checkToken(++it, Token::Type::VALUE))
+				checkToken(++it, Token::Type::SEP);
+			if (it != _tokens.end())
 				goToNextLine(++it);
 			break;
+
 		case Token::Type::VALUE:
 			displayError(ErrorType::NEW_LINE_VALUE, it->getLine());
 			goToNextLine(++it);
@@ -184,29 +188,16 @@ void Parser::validate()
 	}
 }
 
-void Parser::goToNextLine(std::vector<Token>::iterator &it)
-{
-	while (it != _tokens.end() && it->getType() != Token::Type::SEP)
-	{
-		if (it->getType() == Token::Type::UNKNOWN)
-			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
-		it++;
-	}
-}
-
 // Checks for tokens.end(), != expectedType
 bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
 {
 	if (it == _tokens.end())
 	{
 		// It is possible to have end if the SEP required
-		if (expectedType != Token::Type::SEP)
-		{
-			displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
-			return false;
-		}
-		else
+		if (expectedType == Token::Type::SEP)
 			return true;
+		displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
+		return false;
 	}
 	else if (it->getType() == Token::Type::UNKNOWN)
 	{
@@ -219,6 +210,16 @@ bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedTyp
 		return false;
 	}
 	return true;
+}
+
+void Parser::goToNextLine(std::vector<Token>::iterator &it)
+{
+	while (it != _tokens.end() && it->getType() != Token::Type::SEP)
+	{
+		if (it->getType() == Token::Type::UNKNOWN)
+			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
+		it++;
+	}
 }
 
 void Parser::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)

@@ -1,6 +1,6 @@
 push int32(42)
-push int32(33) 			; HERE
+push int32(33) 
 
 add
 
-push float(44.55) 	mul int8(4)	; HERE mul
+push float(44.55) 	mul int8(4)	; HERE

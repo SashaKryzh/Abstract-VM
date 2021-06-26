@@ -51,9 +51,11 @@ private:
 
 	void parseLine(std::string const &, size_t lineCount);
 	Token createToken(std::string tokenString, size_t lineCount);
+
 	void validate();
-	void goToNextLine(std::vector<Token>::iterator &it);
 	bool checkToken(std::vector<Token>::iterator it, Token::Type expectedType);
+	void goToNextLine(std::vector<Token>::iterator &it);
+
 	void displayError(ErrorType errorType, size_t line, Token const &token = _defaultToken, Token::Type expectedType = Token::Type::UNKNOWN);
 };
 
