@@ -39,11 +39,14 @@ private:
 	void div();
 	void mod();
 	void print();
+	void min(); // Bonus
+	void max(); // Bonus
 	void exit();
 
 	std::map<std::string, void (AVM::*)()> _instrs;
 
 	void expression(const char op);
+	void minmax(bool isMax);
 
 	// Utils
 	void assertMoreThanOne();

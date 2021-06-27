@@ -8,11 +8,11 @@
 #include "IOperand.hpp"
 #include "Token.hpp"
 
-#define COUNT_NO_VALUE_INSTRS 10
+#define COUNT_NO_VALUE_INSTRS 11
 #define COUNT_WITH_VALUE_INSTRS 2
 
-static const std::string instrNoValue[COUNT_NO_VALUE_INSTRS] = {"pop", "dump", "add", "sub",
-																"mul", "div", "mod", "print", "exit"};
+static const std::string instrNoValue[COUNT_NO_VALUE_INSTRS] = {"pop", "dump", "add", "sub", "mul",
+																"div", "mod", "print", "min", "max", "exit"};
 static const std::string instrWithValue[COUNT_WITH_VALUE_INSTRS] = {"push", "assert"};
 
 // To use as default value in displayError function

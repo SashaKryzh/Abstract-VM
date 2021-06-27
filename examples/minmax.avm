@@ -1,0 +1,25 @@
+push int8(5)
+push int32(-0035234)
+
+min
+max
+
+pop
+push double(4.9999999)
+
+min
+max
+
+push float(3523435.23412)
+
+min
+max
+
+pop
+pop
+pop
+
+min
+max
+
+exit

@@ -19,6 +19,8 @@ AVM::AVM() : _exit(false)
 		{"div", &AVM::div},
 		{"mod", &AVM::mod},
 		{"print", &AVM::print},
+		{"min", &AVM::min},
+		{"max", &AVM::max},
 		{"exit", &AVM::exit},
 	};
 }
@@ -172,6 +174,35 @@ void AVM::print()
 	else
 		throw InstructionException("Print on empty stack");
 }
+
+void AVM::minmax(bool isMax)
+{
+	if (!_ops.empty())
+	{
+		IOperand const *m = *(_ops.begin());
+		for (auto it = _ops.begin(); it != _ops.end(); ++it)
+		{
+			double vM = std::stod(m->toString());
+			double vI = std::stod((*it)->toString());
+			if (isMax)
+			{
+				if (vM < vI)
+					m = *it;
+			}
+			else
+			{
+				if (vI < vM)
+					m = *it;
+			}
+		}
+		std::cout << operandTypeNames[m->getType()] << '(' << m->toString() << ')' << std::endl;
+	}
+	else
+		std::cout << "Empty" << std::endl;
+}
+
+void AVM::min() { minmax(false); }
+void AVM::max() { minmax(true); }
 
 void AVM::exit()
 {
