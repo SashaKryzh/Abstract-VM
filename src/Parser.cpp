@@ -5,7 +5,7 @@
 
 #include "abstract.hpp"
 
-Parser::Parser() : _isValid(true), _isOk(true) {}
+Parser::Parser() : _isValid(true), _isOk(true), _exitBeforeError(false) {}
 Parser::~Parser() {}
 
 std::vector<Token> Parser::parseFile(std::string const &fileName)
@@ -31,7 +31,7 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 	}
 
 	validate();
-	if (_isValid)
+	if (_isValid || _exitBeforeError)
 		return _tokens;
 	else
 		return {};
@@ -61,7 +61,7 @@ std::vector<Token> Parser::parseStandartInput()
 	}
 
 	validate();
-	if (_isValid)
+	if (_isValid || _exitBeforeError)
 		return _tokens;
 	else
 		return {};
@@ -70,6 +70,7 @@ std::vector<Token> Parser::parseStandartInput()
 std::vector<Token> Parser::parseStandartInputLine()
 {
 	_isValid = true;
+	_exitBeforeError = false;
 	_tokens.clear();
 
 	std::string line;
@@ -83,7 +84,7 @@ std::vector<Token> Parser::parseStandartInputLine()
 
 	parseLine(line, 0);
 	validate();
-	if (_isValid)
+	if (_isValid || _exitBeforeError)
 		return _tokens;
 	else
 		return {};
@@ -156,6 +157,8 @@ void Parser::validate()
 	auto it = _tokens.begin();
 	while (it != _tokens.end())
 	{
+		auto firstInLine = it;
+
 		switch (it->getType())
 		{
 		case Token::Type::INSTR_NO_VALUE:
@@ -185,6 +188,9 @@ void Parser::validate()
 			goToNextLine(++it);
 			break;
 		}
+
+		if (_isValid && firstInLine->getLexeme() == "exit")
+			_exitBeforeError = true;
 	}
 }
 

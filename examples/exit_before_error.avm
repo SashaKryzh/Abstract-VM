@@ -1,0 +1,15 @@
+; -------------
+; example.avm -
+; -------------
+
+push int32(42)
+push int32(33)
+
+add
+
+dump
+
+exit
+
+push int32(44) assert it32(3)
+popp

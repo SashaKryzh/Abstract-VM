@@ -48,6 +48,7 @@ private:
 	std::vector<Token> _tokens;
 
 	bool _isOk;
+	bool _exitBeforeError;
 
 	void parseLine(std::string const &, size_t lineCount);
 	Token createToken(std::string tokenString, size_t lineCount);
