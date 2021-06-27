@@ -17,6 +17,7 @@ AVM::AVM() : _exit(false)
 		{"sub", &AVM::sub},
 		{"mul", &AVM::mul},
 		{"div", &AVM::div},
+		{"div2", &AVM::div2},
 		{"mod", &AVM::mod},
 		{"print", &AVM::print},
 		{"min", &AVM::min},
@@ -129,6 +130,7 @@ void AVM::add() { expression('+'); }
 void AVM::sub() { expression('-'); }
 void AVM::mul() { expression('*'); }
 void AVM::div() { expression('/'); }
+void AVM::div2() { expression('2'); }
 void AVM::mod() { expression('%'); }
 
 void AVM::expression(const char op)
@@ -155,6 +157,9 @@ void AVM::expression(const char op)
 		break;
 	case '%':
 		_ops.push_back(*op2 % *op1);
+		break;
+	case '2':
+		_ops.push_back(op2->div2(*op1));
 		break;
 	}
 

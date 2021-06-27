@@ -37,6 +37,7 @@ private:
 	void sub();
 	void mul();
 	void div();
+	void div2();
 	void mod();
 	void print();
 	void min(); // Bonus

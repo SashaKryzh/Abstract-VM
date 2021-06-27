@@ -33,6 +33,8 @@ public:
 	virtual IOperand const *operator/(IOperand const &rhs) const = 0; // Quotient
 	virtual IOperand const *operator%(IOperand const &rhs) const = 0; // Modulo
 
+	virtual IOperand const *div2(IOperand const &rhs) const = 0; // Bonus : div2
+
 	virtual std::string const &toString(void) const = 0; // String representation of the instance
 	virtual ~IOperand(void) {}
 };

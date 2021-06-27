@@ -28,6 +28,8 @@ public:
 	IOperand const *operator/(IOperand const &rhs) const;
 	IOperand const *operator%(IOperand const &rhs) const;
 
+	IOperand const *div2(IOperand const &rhs) const;
+
 	std::string const &toString(void) const;
 
 private:
@@ -99,6 +101,16 @@ IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 		newValue = value / rhsValue;
 		break;
 
+	case '2':
+		if (rhsValue == 0)
+			throw OperandException("Division by zero");
+		newValue = value / rhsValue;
+		if (newType < eOperandType::Float && (static_cast<int32_t>(value) % static_cast<int32_t>(rhsValue) != 0))
+		{
+			newType = eOperandType::Float;
+		}
+		break;
+
 	case '%':
 		if (_type >= eOperandType::Float || rhs.getType() >= eOperandType::Float)
 			throw OperandException("Floating-point operand during modulo");
@@ -145,6 +157,9 @@ template <typename T>
 IOperand const *Operand<T>::operator/(IOperand const &rhs) const { return operators('/', rhs); }
 template <typename T>
 IOperand const *Operand<T>::operator%(IOperand const &rhs) const { return operators('%', rhs); }
+
+template <typename T>
+IOperand const *Operand<T>::div2(IOperand const &rhs) const { return operators('2', rhs); }
 
 template <typename T>
 std::string const &Operand<T>::toString() const { return _valueString; }
