@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <regex>
+#include <algorithm>
 
 #include "abstract.hpp"
 
@@ -32,7 +33,7 @@ std::vector<Token> Parser::parseFile(std::string const &fileName)
 
 	validate();
 	if (_isValid || _exitBeforeError)
-		return _tokens;
+		return tokensWithoutSep();
 	else
 		return {};
 }
@@ -62,7 +63,7 @@ std::vector<Token> Parser::parseStandartInput()
 
 	validate();
 	if (_isValid || _exitBeforeError)
-		return _tokens;
+		return tokensWithoutSep();
 	else
 		return {};
 }
@@ -85,9 +86,21 @@ std::vector<Token> Parser::parseStandartInputLine()
 	parseLine(line, 0);
 	validate();
 	if (_isValid || _exitBeforeError)
-		return _tokens;
+		return tokensWithoutSep();
 	else
 		return {};
+}
+
+std::vector<Token> Parser::tokensWithoutSep()
+{
+	auto newEnd = std::remove_if(
+		_tokens.begin(), _tokens.end(),
+		[](Token &t)
+		{
+			return t.getType() == Token::Type::SEP;
+		});
+	_tokens.erase(newEnd, _tokens.end());
+	return _tokens;
 }
 
 bool Parser::isOk() const
@@ -148,7 +161,6 @@ Token Parser::createToken(std::string const tokenString, size_t lineCount)
 	return Token(type, tokenString, oType, lineCount);
 }
 
-// TODO: rewrite (errors in screenshots)
 void Parser::validate()
 {
 	if (!_isValid)

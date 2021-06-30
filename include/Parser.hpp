@@ -48,6 +48,8 @@ private:
 	void validate();
 	bool checkToken(std::vector<Token>::iterator it, Token::Type expectedType);
 	void goToNextLine(std::vector<Token>::iterator &it);
+
+	std::vector<Token> tokensWithoutSep();
 };
 
 static Parser gParser;

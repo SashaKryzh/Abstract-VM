@@ -24,6 +24,15 @@ Token::Token(Token &&rhs)
 	line = rhs.line;
 }
 
+Token &Token::operator=(Token &&rhs)
+{
+	type = rhs.type;
+	lexeme = rhs.lexeme;
+	oType = rhs.oType;
+	line = rhs.line;
+	return *this;
+}
+
 Token::Type Token::getType() const
 {
 	return type;

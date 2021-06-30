@@ -23,9 +23,9 @@ public:
 	
 	Token(const Token &);
 	Token(Token &&);
+	Token &operator=(Token &&);
 
 	Token operator=(const Token &) = delete;
-	Token &operator=(Token &&) = delete;
 
 	Type getType() const;
 	std::string const &getLexeme() const;

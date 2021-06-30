@@ -1,8 +1,8 @@
 NAME := avm
 
 CXX := clang++
-# CXXFLAGS := -Wall -Wextra -Werror -std=c++11
-CXXFLAGS := -std=c++11 -g
+# CXXFLAGS := -Wall -Wextra -Werror -std=c++17
+CXXFLAGS := -std=c++17 -g # To debug
 CPPFLAGS := -Iinclude -MMD -MP
 
 SRC_DIR := src
