@@ -175,7 +175,8 @@ void Parser::validate()
 			break;
 
 		case Token::Type::VALUE:
-			displayError(ErrorType::NEW_LINE_VALUE, it->getLine());
+			std::cout << NewLineValue(it->getLine()).what() << std::endl;
+			_isValid = false;
 			goToNextLine(++it);
 			break;
 
@@ -184,7 +185,8 @@ void Parser::validate()
 			break;
 
 		case Token::Type::UNKNOWN:
-			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
+			std::cout << UnknownToken(it->getLine(), it->getLexeme()).what() << std::endl;
+			_isValid = false;
 			goToNextLine(++it);
 			break;
 		}
@@ -194,25 +196,24 @@ void Parser::validate()
 	}
 }
 
-// Checks for tokens.end(), != expectedType
 bool Parser::checkToken(std::vector<Token>::iterator it, Token::Type expectedType)
 {
-	if (it == _tokens.end())
+	try
 	{
-		// It is possible to have end if the SEP required
-		if (expectedType == Token::Type::SEP)
-			return true;
-		displayError(ErrorType::UNEXPECTED_END, (--it)->getLine());
-		return false;
+		if (it == _tokens.end())
+		{
+			if (expectedType != Token::Type::SEP)
+				throw UnexpectedEnd((--it)->getLine());
+		}
+		else if (it->getType() == Token::Type::UNKNOWN)
+			throw UnknownToken(it->getLine(), it->getLexeme());
+		else if (it->getType() != expectedType)
+			throw UnexpectedToken(it->getLine(), it->getType(), expectedType);
 	}
-	else if (it->getType() == Token::Type::UNKNOWN)
+	catch (std::exception const &e)
 	{
-		displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
-		return false;
-	}
-	else if (it->getType() != expectedType)
-	{
-		displayError(ErrorType::UNEXPECTED_TOKEN, it->getLine(), *it, expectedType);
+		_isValid = false;
+		std::cout << e.what() << std::endl;
 		return false;
 	}
 	return true;
@@ -222,34 +223,16 @@ void Parser::goToNextLine(std::vector<Token>::iterator &it)
 {
 	while (it != _tokens.end() && it->getType() != Token::Type::SEP)
 	{
-		if (it->getType() == Token::Type::UNKNOWN)
-			displayError(ErrorType::UNKNOWN_TOKEN, it->getLine(), *it);
+		try
+		{
+			if (it->getType() == Token::Type::UNKNOWN)
+				throw UnknownToken(it->getLine(), it->getLexeme());
+		}
+		catch (std::exception const &e)
+		{
+			_isValid = false;
+			std::cout << e.what() << std::endl;
+		}
 		it++;
-	}
-}
-
-void Parser::displayError(ErrorType errorType, size_t line, Token const &token, Token::Type expectedType)
-{
-	_isValid = false;
-	if (line != 0)
-		std::cout << "Line " << std::setw(3) << std::left << line << " : ";
-	switch (errorType)
-	{
-	case ErrorType::UNKNOWN_TOKEN:
-		std::cout << "Lexical error  : Unknown token : " << token.getLexeme() << std::endl;
-		break;
-
-	case ErrorType::UNEXPECTED_END:
-		std::cout << "Syntatic error : Unexpected end of tokens" << std::endl;
-		break;
-
-	case ErrorType::UNEXPECTED_TOKEN:
-		std::cout << "Syntatic error : Got " << tokenTypeStrings[token.getType()]
-				  << " while expected " << tokenTypeStrings[expectedType] << std::endl;
-		break;
-
-	case ErrorType::NEW_LINE_VALUE:
-		std::cout << "Syntatic error : Got VALUE while expected INSTR or INSTR WITH VALUE " << std::endl;
-		break;
 	}
 }

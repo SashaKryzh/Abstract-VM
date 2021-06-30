@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Token.hpp"
+#include "AvmException.hpp"
 
 namespace utils
 {

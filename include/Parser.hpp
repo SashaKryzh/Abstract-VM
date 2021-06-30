@@ -36,14 +36,6 @@ public:
 	bool isOk() const;
 
 private:
-	enum ErrorType
-	{
-		UNKNOWN_TOKEN = 0,
-		UNEXPECTED_END,
-		UNEXPECTED_TOKEN,
-		NEW_LINE_VALUE,
-	};
-
 	bool _isValid;
 	std::vector<Token> _tokens;
 
@@ -56,8 +48,6 @@ private:
 	void validate();
 	bool checkToken(std::vector<Token>::iterator it, Token::Type expectedType);
 	void goToNextLine(std::vector<Token>::iterator &it);
-
-	void displayError(ErrorType errorType, size_t line, Token const &token = _defaultToken, Token::Type expectedType = Token::Type::UNKNOWN);
 };
 
 static Parser gParser;

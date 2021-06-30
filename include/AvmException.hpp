@@ -4,9 +4,12 @@
 #include <exception>
 #include <string>
 
+#include "Token.hpp"
+
 class AvmException : public std::exception
 {
 public:
+	AvmException();
 	AvmException(std::string const &msg);
 	~AvmException();
 
@@ -18,7 +21,7 @@ public:
 
 	const char *what() const noexcept;
 
-private:
+protected:
 	std::string _msg;
 };
 
@@ -32,6 +35,30 @@ class OperandException : public AvmException
 {
 public:
 	OperandException(std::string const &msg);
+};
+
+class UnknownToken : public AvmException
+{
+public:
+	UnknownToken(size_t line, std::string lexeme);
+};
+
+class UnexpectedEnd : public AvmException
+{
+public:
+	UnexpectedEnd(size_t line);
+};
+
+class UnexpectedToken : public AvmException
+{
+public:
+	UnexpectedToken(size_t line, Token::Type tokenType, Token::Type expectedType);
+};
+
+class NewLineValue : public AvmException
+{
+public:
+	NewLineValue(size_t line);
 };
 
 #endif
