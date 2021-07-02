@@ -94,7 +94,11 @@ void AVM::push()
 void AVM::pop()
 {
 	if (!_ops.empty())
+	{
+		IOperand const *tmp = _ops.back();
 		_ops.pop_back();
+		delete tmp;
+	}
 	else
 		throw InstructionException("Pop on empty stack");
 }
