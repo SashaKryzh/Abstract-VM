@@ -2,6 +2,7 @@
 #define OPERAND_HPP
 
 #include <sstream>
+#include <cfenv>
 
 #include "IOperand.hpp"
 #include "OperandFactory.hpp"
@@ -75,6 +76,9 @@ int Operand<T>::getPrecision() const
 template <typename T>
 IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 {
+	std::feclearexcept(FE_OVERFLOW);
+	std::feclearexcept(FE_UNDERFLOW);
+
 	eOperandType newType = std::max(_type, rhs.getType());
 
 	long double value = std::stold(this->toString());
@@ -120,7 +124,7 @@ IOperand const *Operand<T>::operators(char const op, IOperand const &rhs) const
 		break;
 	}
 
-	if (willNewValueOverflowType(newValue, newType))
+	if (willNewValueOverflowType(newValue, newType) || (bool)std::fetestexcept(FE_OVERFLOW) || (bool)std::fetestexcept(FE_UNDERFLOW))
 		throw OperandException("Overflow");
 
 	auto str = newType >= eOperandType::Float ? std::to_string(newValue) : std::to_string(static_cast<int32_t>(newValue));

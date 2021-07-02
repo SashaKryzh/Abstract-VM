@@ -1,0 +1,13 @@
+push int32(2147483647)
+push int8(32)
+div2
+push int32(5)
+div2
+push float(32.0)
+mul
+push double(-5.0)
+mul
+push int8(-1)
+add
+dump
+exit

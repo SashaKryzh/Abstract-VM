@@ -1,0 +1,6 @@
+push float(0.000000000000000000000001)
+push float(0.000000000000000000000001)
+dump
+mul
+dump
+exit
