@@ -145,26 +145,35 @@ void AVM::expression(const char op)
 	IOperand const *op2 = _ops.back();
 	_ops.pop_back();
 
-	switch (op)
+	try
 	{
-	case '+':
-		_ops.push_back(*op2 + *op1);
-		break;
-	case '-':
-		_ops.push_back(*op2 - *op1);
-		break;
-	case '*':
-		_ops.push_back(*op2 * *op1);
-		break;
-	case '/':
-		_ops.push_back(*op2 / *op1);
-		break;
-	case '%':
-		_ops.push_back(*op2 % *op1);
-		break;
-	case '2':
-		_ops.push_back(op2->div2(*op1));
-		break;
+		switch (op)
+		{
+		case '+':
+			_ops.push_back(*op2 + *op1);
+			break;
+		case '-':
+			_ops.push_back(*op2 - *op1);
+			break;
+		case '*':
+			_ops.push_back(*op2 * *op1);
+			break;
+		case '/':
+			_ops.push_back(*op2 / *op1);
+			break;
+		case '%':
+			_ops.push_back(*op2 % *op1);
+			break;
+		case '2':
+			_ops.push_back(op2->div2(*op1));
+			break;
+		}
+	}
+	catch (std::exception const &e)
+	{
+		delete op1;
+		delete op2;
+		throw;
 	}
 
 	delete op1;
