@@ -174,15 +174,17 @@ void Parser::validate()
 		switch (it->getType())
 		{
 		case Token::Type::INSTR_NO_VALUE:
-			checkToken(++it, Token::Type::SEP);
-			if (it != _tokens.end())
+			if (checkToken(++it, Token::Type::SEP))
+				goToNextLine(it);
+			else if (it != _tokens.end())
 				goToNextLine(++it);
 			break;
 
 		case Token::Type::INSTR_WITH_VALUE:
-			if (checkToken(++it, Token::Type::VALUE))
-				checkToken(++it, Token::Type::SEP);
-			if (it != _tokens.end())
+			if (checkToken(++it, Token::Type::VALUE) &&
+				checkToken(++it, Token::Type::SEP))
+				goToNextLine(it);
+			else if (it != _tokens.end())
 				goToNextLine(++it);
 			break;
 
