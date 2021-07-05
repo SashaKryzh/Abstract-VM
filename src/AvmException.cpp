@@ -3,24 +3,6 @@
 #include <sstream>
 #include <fstream>
 
-AvmException::AvmException() {}
-AvmException::AvmException(std::string const &msg) : _msg(msg) {}
-AvmException::~AvmException() {}
-AvmException::AvmException(AvmException const &rhs) { _msg = rhs._msg; }
-
-const char *AvmException::what() const noexcept
-{
-	return _msg.c_str();
-}
-
-InstructionException::InstructionException(std::string const &msg) : AvmException(msg) {}
-
-OperandException::OperandException(std::string const &msg) : AvmException(msg) {}
-
-//
-// Parser Exceptions
-//
-
 static std::string lineString(size_t line)
 {
 	if (line != 0)
@@ -32,6 +14,33 @@ static std::string lineString(size_t line)
 	else
 		return "";
 }
+
+AvmException::AvmException() {}
+AvmException::AvmException(std::string const &msg) : _msg(msg) {}
+AvmException::~AvmException() {}
+AvmException::AvmException(AvmException const &rhs) { _msg = rhs._msg; }
+
+const char *AvmException::what() const noexcept
+{
+	return _msg.c_str();
+}
+
+//
+// Runtime Exceptions
+//
+
+InstructionException::InstructionException(std::string const &msg) : AvmException(msg) {}
+
+NoExitInstruction::NoExitInstruction(size_t line)
+{
+	_msg = lineString(line) + "No exit instruction at the end";
+}
+
+OperandException::OperandException(std::string const &msg) : AvmException(msg) {}
+
+//
+// Parser Exceptions
+//
 
 UnknownToken::UnknownToken(size_t line, std::string lexeme)
 {

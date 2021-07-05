@@ -31,6 +31,12 @@ public:
 	InstructionException(std::string const &msg);
 };
 
+class NoExitInstruction : public AvmException
+{
+public:
+	NoExitInstruction(size_t line);
+};
+
 class OperandException : public AvmException
 {
 public:

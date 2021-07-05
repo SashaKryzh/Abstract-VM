@@ -54,9 +54,11 @@ void AVM::executeFull(std::vector<Token> &tokens)
 			}
 		}
 		else
-		{
-			std::cout << "No exit instruction at the end" << std::endl;
-		}
+			throw NoExitInstruction((--_it)->getLine() + 1);
+	}
+	catch (const NoExitInstruction &e)
+	{
+		std::cout << e.what() << std::endl;
 	}
 	catch (const std::exception &e)
 	{
