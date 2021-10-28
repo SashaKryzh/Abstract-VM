@@ -1,5 +1,7 @@
 # Abstract VM (42 school)
-42 school C++ project made by **okryzhan**.
+Abstract VM is a machine that uses a stack to compute simple arithmetic expressions provided as basic assembly programs. 42 school C++ project made by **okryzhan**.
+
+**Final mark:** 125/100 ✅ 
 
 - [Abstract VM (42 school)](#abstract-vm-42-school)
 	- [Usage](#usage)
